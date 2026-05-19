@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Capa de Datos: Bus de Eventos asíncronos (RabbitMQ)
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: quickpay-rabbitmq
+    ports:
+      - "5672:5672"   # Puerto de comunicación de eventos
+      - "15672:15672" # Panel de control visual de RabbitMQ
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  # Capa de Servidor: Backend en NestJS
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: quickpay-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - rabbitmq
+
+  # Capa de Usuario: Frontend en Vue.js
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: quickpay-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  rabbitmq_data:

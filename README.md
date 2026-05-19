@@ -12,3 +12,6 @@ Antes de iniciar, asegúrate de tener instalado en tu computadora:
    ```bash
    git clone [https://github.com/tu-usuario/quickpay-mvp.git](https://github.com/tu-usuario/quickpay-mvp.git)
    cd quickpay-mvp
+
+2. Encender todo el sistema con:
+    docker-compose up --build
